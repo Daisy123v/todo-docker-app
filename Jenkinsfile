@@ -2,12 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/Daisy123v/todo-docker-app.git', credentialsId: 'github-token'
-            }
-        }
-
         stage('Build Images') {
             steps {
                 sh 'docker build -t daisy2256/todo-app-backend:latest ./backend'
