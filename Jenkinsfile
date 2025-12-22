@@ -1,54 +1,32 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKERHUB_USER = "daisy2256"
-        IMAGE_FRONT = "todo-frontend"
-        IMAGE_BACK = "todo-backend"
-    }
-
     stages {
-
-        stage('Pull Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Daisy123v/todo-docker-app.git'
+                git url: 'https://github.com/Daisy123v/todo-docker-app.git', credentialsId: 'github-token'
             }
         }
 
         stage('Build Images') {
             steps {
-                sh 'docker compose build'
-            }
-        }
-
-        stage('Run Locally') {
-            steps {
-                sh 'docker compose up -d'
+                sh 'docker build -t daisy2256/todo-app-backend:latest ./backend'
+                sh 'docker build -t daisy2256/todo-app-frontend:latest ./frontend'
             }
         }
 
         stage('Login Docker Hub') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'daisy2256',
-                    passwordVariable: 'Fatouch23.'
-                )]) {
-                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+                    sh 'echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin'
                 }
             }
         }
 
         stage('Push Images') {
             steps {
-                sh '''
-                docker tag todo-docker-app-frontend ${DOCKERHUB_USER}/${IMAGE_FRONT}:latest
-                docker tag todo-docker-app-backend ${DOCKERHUB_USER}/${IMAGE_BACK}:latest
-
-                docker push ${DOCKERHUB_USER}/${IMAGE_FRONT}:latest
-                docker push ${DOCKERHUB_USER}/${IMAGE_BACK}:latest
-                '''
+                sh 'docker push daisy2256/todo-app-backend:latest'
+                sh 'docker push daisy2256/todo-app-frontend:latest'
             }
         }
     }
