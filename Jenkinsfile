@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = "daisy2256"   // <-- remplace par ton Docker Hub username
+        DOCKERHUB_USER = "daisy2256"
         IMAGE_FRONT = "todo-frontend"
         IMAGE_BACK = "todo-backend"
     }
@@ -12,7 +12,7 @@ pipeline {
         stage('Pull Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/Daisy123v/todo-docker-app.git'   // <-- remplace USER par ton nom GitHub
+                    url: 'https://github.com/Daisy123v/todo-docker-app.git'
             }
         }
 
@@ -31,9 +31,9 @@ pipeline {
         stage('Login Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',    // <--- correspond à l'ID que tu as donné dans Jenkins credentials
-                    usernameVariable: 'USER',
-                    passwordVariable: 'PASS'
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'daisy2256',
+                    passwordVariable: 'Fatouch23.'
                 )]) {
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
                 }
@@ -43,11 +43,11 @@ pipeline {
         stage('Push Images') {
             steps {
                 sh '''
-                docker tag todo-docker-app-frontend $DOCKERHUB_USER/$IMAGE_FRONT:latest
-                docker tag todo-docker-app-backend $DOCKERHUB_USER/$IMAGE_BACK:latest
+                docker tag todo-docker-app-frontend ${DOCKERHUB_USER}/${IMAGE_FRONT}:latest
+                docker tag todo-docker-app-backend ${DOCKERHUB_USER}/${IMAGE_BACK}:latest
 
-                docker push $DOCKERHUB_USER/$IMAGE_FRONT:latest
-                docker push $DOCKERHUB_USER/$IMAGE_BACK:latest
+                docker push ${DOCKERHUB_USER}/${IMAGE_FRONT}:latest
+                docker push ${DOCKERHUB_USER}/${IMAGE_BACK}:latest
                 '''
             }
         }
