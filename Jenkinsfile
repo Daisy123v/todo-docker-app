@@ -1,7 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKERHUB_USER = "daisy2256"
+    }
+
     stages {
+
         stage('Build Images') {
             steps {
                 sh 'docker build -t daisy2256/todo-app-backend:latest ./backend'
@@ -11,8 +16,12 @@ pipeline {
 
         stage('Login Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                    sh 'echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin'
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-hub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                 }
             }
         }
