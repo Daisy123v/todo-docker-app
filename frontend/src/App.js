@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 function App() {
   const [tasks, setTasks] = useState("");
   const [list, setList] = useState([]);
 
   useEffect(() => {
-    fetch("http://backend:5000/tasks")
+    fetch("http://localhost:5000/tasks")
       .then(res => res.json())
       .then(data => setList(data));
   }, []);
 
   const addTask = () => {
-    fetch("http://backend:5000/tasks", {
+    fetch("http://localhost:5000/tasks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: tasks })
@@ -23,7 +22,7 @@ function App() {
   };
 
   const deleteTask = (id) => {
-    fetch(`http://backend:5000/tasks/${id}`, { method: "DELETE" })
+    fetch(`http://localhost:5000/tasks/${id}`, { method: "DELETE" })
       .then(() => setList(list.filter(t => t.id !== id)));
   };
 
